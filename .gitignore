@@ -70,3 +70,5 @@ __src
 /example/src/**
 orion.json
 .DS_Store
+
+demo

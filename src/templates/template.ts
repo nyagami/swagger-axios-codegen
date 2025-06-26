@@ -267,7 +267,7 @@ function requestBodyString(method: string, parsedParameters: [], bodyParameter: 
 /** serviceTemplate */
 export function serviceTemplate(name: string, body: string, imports: string[] = null) {
   // add base imports
-  let mappedImports = !imports ? '' : `import { ${imports.join(',')}, } from './index.defs'\n`
+  let mappedImports = !imports ? '' : `import { ${imports.join(',')}, } from '../index.defs'\n`
 
   // }
 

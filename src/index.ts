@@ -139,7 +139,14 @@ export async function codegen(params: ISwaggerOptions) {
 
       text = disableLint() + text
       text = serviceTemplate(className + options.serviceNameSuffix, text, uniqueImports)
-      writeFile(options.outputDir || '', className + 'Service.ts', format(text, options))
+      
+      const apiEntryName = className + 'Api'
+      if(!fs.existsSync(options.outputDir)) { 
+        fs.mkdirSync(options.outputDir)
+      }
+      const outputDir = path.join(options.outputDir || '', apiEntryName)
+
+      writeFile(outputDir, 'index.ts', format(text, options))
     })
 
     let defsString = ''
