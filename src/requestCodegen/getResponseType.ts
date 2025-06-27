@@ -16,12 +16,15 @@ export function getResponseType(reqProps: IRequestMethod, isV3: boolean): { resp
   let resSchema = null
   if (reqProps.responses[successStatusCode]) {
     if (isV3 === true) {
-      if (
-        reqProps.responses[successStatusCode].content &&
-        reqProps.responses[successStatusCode].content['application/json'] &&
-        reqProps.responses[successStatusCode].content['application/json'].schema
-      )
-        resSchema = reqProps.responses[successStatusCode].content['application/json'].schema
+      const contentTypes = ['*/*', 'application/json']
+      for(const contentType of contentTypes) { 
+        if (
+          reqProps.responses[successStatusCode].content &&
+          reqProps.responses[successStatusCode].content[contentType] &&
+          reqProps.responses[successStatusCode].content[contentType].schema
+        )
+          resSchema = reqProps.responses[successStatusCode].content[contentType].schema
+      }
     } else {
       if (reqProps.responses[successStatusCode].schema) resSchema = reqProps.responses[successStatusCode].schema
     }
