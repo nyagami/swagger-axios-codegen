@@ -203,44 +203,33 @@ export function findDeepRefs(imports: string[], allDefinition: IDefinitionClass[
   for (const model of imports) {
     const modelNames = genericsToClassNames(model)
     for (const modelName of modelNames) {
-      // if (modelNames.includes('AuthUserStationDto[]')) {
-      //   console.log('modelNames', modelNames);
-      // }
+
       let ref = null
       ref = allDefinition.find(item => modelName === item.name)
       if (ref == null)
         ref = allDefinition.find(item => modelName.startsWith(item.name))
-      // if (modelNames.includes('AuthUserStationDto[]')) {
-      //   console.log('ref', JSON.stringify(ref));
-      //   // return []
-      // }
+
       if (ref && !result.includes(ref.name)) {
-        // if (ref.value.imports.includes('AuthUserStationDto[]') || ref.value.imports.includes('AuthUserStationDto[]')) {
-        //   console.log('findDeepRefs', result);
-        //   console.log('AuthUserStationDto', ref.value.imports);
-        //   // return []
-        // }
+
 
         result.push(ref.name);
 
 
-        if (ref.value.imports.length > 0) {
-          let uniqueImports: string[] = []
-          for (const importItem of ref.value.imports) {
-            if (result.includes(importItem) || uniqueImports.includes(importItem)) continue
-            uniqueImports.push(importItem)
-          }
+        // if (ref.value.imports.length > 0) {
+        //   let uniqueImports: string[] = []
+        //   for (const importItem of ref.value.imports) {
+        //     if (result.includes(importItem) || uniqueImports.includes(importItem)) continue
+        //     uniqueImports.push(importItem)
+        //   }
 
 
-          let deepRefs = findDeepRefs(uniqueImports, allDefinition, allEnums, result)
-          // if (ref.value.imports.includes('MotorMonthlyCurrentItem') || ref.value.imports.includes('MotorMonthlyDto')) {
-          //   console.log('uniqueImports', deepRefs);
-          // }
-          if (!!deepRefs) {
-            result = deepRefs
-          }
+        //   let deepRefs = findDeepRefs(uniqueImports, allDefinition, allEnums, result)
+  
+        //   if (!!deepRefs) {
+        //     result = deepRefs
+        //   }
 
-        }
+        // }
       } else {
         ref = allEnums.find(item => modelNames.some((modelName) => modelName.startsWith(item.name)))
         if (ref) {
@@ -248,11 +237,6 @@ export function findDeepRefs(imports: string[], allDefinition: IDefinitionClass[
         }
       }
     }
-  }
-
-
-  if (imports.includes('AuthUserStationDto')) {
-    console.log('result', result);
   }
 
 

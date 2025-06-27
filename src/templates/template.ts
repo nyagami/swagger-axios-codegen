@@ -223,14 +223,14 @@ export function requestTemplate(name: string, requestSchema: IRequestSchema, opt
  */
 ${options.useStaticMethod ? 'static' : ''} ${camelcase(
     name
-  )}(${parameters}options:IRequestOptions={}):Promise<${responseTypeWrapper ? responseTypeWrapper(responseType) : responseType}> {
+  )}(${parameters}):Promise<${responseTypeWrapper ? responseTypeWrapper(responseType) : responseType}> {
   return new Promise((resolve, reject) => {
     let url = basePath+'${path}'
     ${pathReplace}
     ${parsedParameters && headerParameters && headerParameters.length > 0
       ? `options.headers = {${headerParameters}, ...options.headers }`
       : ''}
-    const configs:IRequestConfig = getConfigs('${method}', '${contentType}', url, options)
+    const configs = getConfigs('${method}', '${contentType}', url, {})
     ${parsedParameters && queryParameters.length > 0 ? 'configs.params = {' + queryParameters.join(',') + '}' : ''}
     
     
@@ -267,7 +267,7 @@ function requestBodyString(method: string, parsedParameters: [], bodyParameter: 
 /** serviceTemplate */
 export function serviceTemplate(name: string, body: string, imports: string[] = null) {
   // add base imports
-  let mappedImports = !imports ? '' : `import { ${imports.join(',')}, } from '../index.defs'\n`
+  let mappedImports = (imports && imports.length > 0) ? `import { ${imports.join(',')}, } from '../index.defs'\n` : ''
 
   // }
 

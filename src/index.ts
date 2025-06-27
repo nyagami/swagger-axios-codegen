@@ -131,7 +131,7 @@ export async function codegen(params: ISwaggerOptions) {
 
       // unique import
       const uniqueImports: string[] = []
-      allImport.push(...getDefinedGenericTypes(), 'IRequestOptions', 'IRequestConfig', 'getConfigs', 'axios', 'basePath')
+      allImport.push('getConfigs', 'axios', 'basePath')
       for (const item of allImport) {
         if (!uniqueImports.includes(item)) uniqueImports.push(item)
       }
