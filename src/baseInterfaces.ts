@@ -40,7 +40,11 @@ export interface ISwaggerOptions {
   /** use parameters in header or not*/
   useHeaderParameters?: boolean
   /** wrapper response type */
-  responseTypeWrapper?: (responseType: string) => string
+  responseTypeWrapper?: (responseType: string) => string,
+
+  fetcherImportPath?: string,
+
+  showErrorRequests?: {path: string, method: string}[],
 }
 
 export interface IPropDef {

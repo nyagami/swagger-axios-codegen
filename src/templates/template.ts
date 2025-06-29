@@ -1,5 +1,5 @@
 import camelcase from 'camelcase'
-import { IPropDef } from '../baseInterfaces'
+import { IPropDef, ISwaggerOptions } from '../baseInterfaces'
 import { isDefinedGenericTypes, toBaseType } from '../utils'
 
 const baseTypes = ['string', 'number', 'object', 'boolean', 'any']
@@ -194,7 +194,7 @@ interface IRequestSchema {
 }
 
 /** requestTemplate */
-export function requestTemplate(name: string, requestSchema: IRequestSchema, options: any) {
+export function requestTemplate(name: string, requestSchema: IRequestSchema, options: ISwaggerOptions) {
   let {
     summary = '',
     parameters = '',
@@ -204,79 +204,62 @@ export function requestTemplate(name: string, requestSchema: IRequestSchema, opt
     path = '',
     pathReplace = '',
     parsedParameters = <any>{},
-    formData = '',
     requestBody = null,
   } = requestSchema
-  const { useClassTransformer, responseTypeWrapper } = options
+  const {  responseTypeWrapper } = options
   const { queryParameters = [], bodyParameter = [], headerParameters } = parsedParameters
-  const nonArrayType = responseType.replace('[', '').replace(']', '')
-  const isArrayType = responseType.indexOf('[') > 0
-  const transform = useClassTransformer && baseTypes.indexOf(nonArrayType) < 0
-  const resolveString = transform
-    ? `(response: any${isArrayType ? '[]' : ''
-    }) => resolve(plainToClass(${nonArrayType}, response))`
-    : 'resolve'
 
   return `
 /**
  * ${summary || ''}
  */
-${options.useStaticMethod ? 'static' : ''} ${camelcase(
+function ${camelcase(
     name
   )}(${parameters}):Promise<${responseTypeWrapper ? responseTypeWrapper(responseType) : responseType}> {
-  return new Promise((resolve, reject) => {
-    let url = basePath+'${path}'
-    ${pathReplace}
-    ${parsedParameters && headerParameters && headerParameters.length > 0
-      ? `options.headers = {${headerParameters}, ...options.headers }`
-      : ''}
-    const configs = getConfigs('${method}', '${contentType}', url, {})
-    ${parsedParameters && queryParameters.length > 0 ? 'configs.params = {' + queryParameters.join(',') + '}' : ''}
-    
-    
-    ${requestBodyString(method, parsedParameters, bodyParameter, requestBody, contentType, formData)}
-    
-    axios(configs, ${resolveString}, reject);
-  });
-}`
-}
-
-function requestBodyString(method: string, parsedParameters: [], bodyParameter: [], requestBody: string, contentType: string, formData: string) {
-  if (parsedParameters && bodyParameter && bodyParameter.length > 0 || !!requestBody || formData.length > 0) {
-
-    const tips = `/** 适配移动开发（iOS13 等版本），只有 POST、PUT 等请求允许带body */ \n 
-    console.warn('适配移动开发（iOS13 等版本），只有 POST、PUT 等请求允许带body')`
-    return `
-    
-    ${method === 'post' || method === 'put' ? '' : tips}
-
-    let data = ${parsedParameters && bodyParameter && bodyParameter.length > 0
+  let url = basePath+'${path}'
+  ${pathReplace}
+  const configs = getConfigs('${method}', '${contentType}', url, {})
+  ${parsedParameters && headerParameters && headerParameters.length > 0
+  ? `options.headers = {${headerParameters}, ...options.headers }`
+  : ''}
+  ${parsedParameters && queryParameters.length > 0 ? 'configs.params = {' + queryParameters.join(',') + '}' : ''}
+  const data = ${parsedParameters && bodyParameter && bodyParameter.length > 0
         ?
         bodyParameter
         : !!requestBody
           ? 'params.body'
           : 'undefined'
       }
-    ${contentType === 'multipart/form-data' ? formData : ''}
-    configs.data = data;`
-  }
 
-  return ''
+  return fetcher(
+    {
+      method: '${method}',
+      url: url,
+      data,
+      params: configs.params
+    },
+    {
+      displayError: ${options.showErrorRequests?.find((v) => v.path === path && v.method === method) ? 'true' : 'false'},
+    }
+  );
+}`
 }
 
 /** serviceTemplate */
-export function serviceTemplate(name: string, body: string, imports: string[] = null) {
+export function serviceTemplate(allRequestNames: string[], body: string, imports: string[] = null, fetcherImportPath: string = './Fetcher') {
   // add base imports
   let mappedImports = (imports && imports.length > 0) ? `import { ${imports.join(',')}, } from '../index.defs'\n` : ''
-
+  const fetcherImports = `import { fetcher } from '${fetcherImportPath}'\n;`
   // }
 
 
   return `
 
   ${mappedImports}
-  export class ${name} {
-    ${body}
+  ${fetcherImports}
+  ${body}
+  export default {
+    ${allRequestNames.join(',\n')}
   }
   `
 }
