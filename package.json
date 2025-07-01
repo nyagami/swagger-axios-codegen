@@ -24,7 +24,8 @@
     "start": "node ./dist/index",
     "dev": "tsc --watch -p ./src ",
     "prepublish": "npm run build",
-    "demo": "node demo/index.js"
+    "demo": "node demo/index.js",
+    "bundle": "esbuild src/index.ts --bundle --platform=node --target=node22 --outfile=dist/bundle.js"
   },
   "dependencies": {
     "axios": "^1.7.9",
@@ -37,6 +38,7 @@
   "devDependencies": {
     "@types/node": "16",
     "@types/prettier": "^2.7.2",
+    "esbuild": "^0.25.5",
     "rimraf": "^5.0.5",
     "tslint": "^5.10.0",
     "typescript": "^5.5.4"
