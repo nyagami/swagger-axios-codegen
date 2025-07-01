@@ -212,7 +212,7 @@ export function requestTemplate(name: string, requestSchema: IRequestSchema, opt
 function ${camelcase(
     name
   )}(${parameters}){
-  let url = basePath+'${path}'
+  ${pathReplace ? 'let' : 'const'} url = basePath+'${path}'
   ${pathReplace}
   const configs = getConfigs('${method}', '${contentType}', url, {})
   ${parsedParameters && headerParameters && headerParameters.length > 0
