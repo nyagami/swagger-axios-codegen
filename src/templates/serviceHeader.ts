@@ -9,7 +9,7 @@ export function serviceHeader(options: ISwaggerOptions) {
   `
     : ''
   return `/** Generate by swagger-axios-codegen */
-  import axiosStatic, { type AxiosInstance, type AxiosRequestConfig } from 'axios';
+  import { type AxiosInstance, type AxiosRequestConfig } from 'axios';
 
   ${classTransformerImport}
 
@@ -121,20 +121,6 @@ function requestHeader() {
     loading: false,
     showError: false
   };
-
-  // Instance selector
-  export function axios(configs: IRequestConfig, resolve: (p: any) => void, reject: (p: any) => void): Promise<any> {
-    if (serviceOptions.axios) {
-      return serviceOptions.axios.request(configs).then(res => {
-        resolve(res.data);
-      })
-        .catch(err => {
-          reject(err);
-        });
-    } else {
-      throw new Error('please inject yourself instance like axios  ')
-    }
-  }
   
   export function getConfigs(method: string, contentType: string, url: string,options: any):IRequestConfig {
     const configs: IRequestConfig = { loading:serviceOptions.loading, showError:serviceOptions.showError, ...options, method, url };

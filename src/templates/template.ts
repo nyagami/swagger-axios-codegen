@@ -115,15 +115,10 @@ export function classPropsTemplate(
     const decorators = classTransformTemplate(type, format, isType)
 
     return `
-  /** ${description || ''} */
   ${decorators}
-  ${filedName}${canNull ? '?' : ''}:${type};
-  `
+  ${filedName}${canNull ? '?' : ''}:${type};`
   } else {
-    return `
-  /** ${description || ''} */
-  ${filedName}${canNull ? '?' : ''}:${type};
-  `
+    return `${filedName}${canNull ? '?' : ''}:${type};`
   }
 }
 
@@ -167,8 +162,9 @@ export function classConstructorTemplate(name: string) {
 
 /** 枚举 */
 export function enumTemplate(name: string, enumString: string, prefix?: string) {
+  const enumName = prefix ? `${prefix}${name.replace(/^Enum/, '')}` : name
   return `
-  export enum ${name}{
+  export enum ${enumName}{
     ${enumString}
   }
   `
@@ -215,7 +211,7 @@ export function requestTemplate(name: string, requestSchema: IRequestSchema, opt
  */
 function ${camelcase(
     name
-  )}(${parameters}):Promise<${responseTypeWrapper ? responseTypeWrapper(responseType) : responseType}> {
+  )}(${parameters}){
   let url = basePath+'${path}'
   ${pathReplace}
   const configs = getConfigs('${method}', '${contentType}', url, {})
@@ -231,7 +227,7 @@ function ${camelcase(
           : 'undefined'
       }
 
-  return fetcher(
+  return fetcher<${responseTypeWrapper ? responseTypeWrapper(responseType) : responseType}>(
     {
       method: '${method}',
       url: url,
@@ -240,7 +236,8 @@ function ${camelcase(
     },
     {
       displayError: ${options.showErrorRequests?.find((v) => v.path === path && v.method === method) ? 'true' : 'false'},
-    }
+    },
+    false,
   );
 }`
 }

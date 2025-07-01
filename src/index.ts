@@ -2,9 +2,7 @@ import * as fs from 'fs'
 import * as path from 'path'
 import prettier from 'prettier'
 import axios from 'axios'
-import pascalcase from 'pascalcase'
-import multimatch from 'multimatch';
-import { ISwaggerOptions, IInclude, IDefinitionClasses, IDefinitionEnums } from './baseInterfaces'
+import { ISwaggerOptions } from './baseInterfaces'
 import { ISwaggerSource } from './swaggerInterfaces'
 import {
   requestTemplate,
@@ -102,9 +100,6 @@ export async function codegen(params: ISwaggerOptions) {
       }
     })
   }
-
-  let requestClass = requestCodegen(paths, isV3, options)
-  // let requestClasses = Object.entries(requestCodegen(swaggerSource.paths, isV3, options))
 
   const { models, enums } = isV3
     ? componentsCodegen(swaggerSource.components)
