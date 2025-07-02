@@ -116,12 +116,8 @@ export async function codegen(params: ISwaggerOptions) {
       let allRequestNames: string[] = []
       requests.forEach(req => {
         const reqName = options.methodNameMode == 'operationId' ? req.operationId : req.name
-        if ('register' === reqName) {
-          console.log('req.requestSchema.parsedParameters.imports', JSON.stringify(req.requestSchema.parsedParameters.imports));
-
-        }
         allRequestNames.push(reqName)
-        text += requestTemplate(reqName, req.requestSchema, options)
+        text += requestTemplate(reqName, req.requestSchema, options, _allModel)
         let imports = findDeepRefs(req.requestSchema.parsedParameters.imports, _allModel, _allEnum)
         allImport = allImport.concat(imports)
       })

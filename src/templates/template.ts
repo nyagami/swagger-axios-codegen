@@ -1,5 +1,5 @@
 import camelcase from 'camelcase'
-import { IPropDef, ISwaggerOptions } from '../baseInterfaces'
+import { IDefinitionClass, IPropDef, ISwaggerOptions } from '../baseInterfaces'
 import { isDefinedGenericTypes, toBaseType } from '../utils'
 
 const baseTypes = ['string', 'number', 'object', 'boolean', 'any']
@@ -190,7 +190,7 @@ interface IRequestSchema {
 }
 
 /** requestTemplate */
-export function requestTemplate(name: string, requestSchema: IRequestSchema, options: ISwaggerOptions) {
+export function requestTemplate(name: string, requestSchema: IRequestSchema, options: ISwaggerOptions, allModel: IDefinitionClass[]) {
   let {
     summary = '',
     parameters = '',
@@ -202,9 +202,9 @@ export function requestTemplate(name: string, requestSchema: IRequestSchema, opt
     parsedParameters = <any>{},
     requestBody = null,
   } = requestSchema
-  const {  responseTypeWrapper } = options
   const { queryParameters = [], bodyParameter = [], headerParameters } = parsedParameters
-
+  const responseDef = allModel.find(v => v.name === responseType)
+  const hasMeta = responseDef && responseDef.value.props.find(v => v.type === 'MetaData')
   return `
 /**
  * ${summary || ''}
@@ -227,7 +227,7 @@ function ${camelcase(
           : 'undefined'
       }
 
-  return fetcher<${responseTypeWrapper ? responseTypeWrapper(responseType) : responseType}>(
+  return fetcher<${responseType}, ${hasMeta ? 'true' : 'false'}>(
     {
       method: '${method}',
       url: url,
@@ -237,7 +237,7 @@ function ${camelcase(
     {
       displayError: ${options.showErrorRequests?.find((v) => v.path === path && v.method === method) ? 'true' : 'false'},
     },
-    false,
+    ${hasMeta ? 'true' : 'false'},
   );
 }`
 }
