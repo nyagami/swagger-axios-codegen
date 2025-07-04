@@ -1,5 +1,5 @@
 import camelcase from 'camelcase'
-import { ISwaggerOptions } from '../baseInterfaces'
+import { IDefinitionClass, ISwaggerOptions } from '../baseInterfaces'
 import { IParameter, IPaths, IRequestUrl } from '../swaggerInterfaces'
 import { getClassNameByPath, getMethodNameByPath, RemoveSpecialCharacters } from '../utils'
 import { getContentType } from './getContentType'
@@ -18,7 +18,7 @@ export interface IRequestMethods {
   requestSchema: any;
 }
 
-export function requestCodegen(paths: IPaths, isV3: boolean, options: ISwaggerOptions): IRequestClass {
+export function requestCodegen(paths: IPaths, isV3: boolean, options: ISwaggerOptions, allModel: IDefinitionClass[]): IRequestClass {
   const requestClasses: IRequestClass = {}
 
   if (!!paths)
@@ -129,9 +129,11 @@ export function requestCodegen(paths: IPaths, isV3: boolean, options: ISwaggerOp
         const { responseType, isRef: refResponseType } = getResponseType(reqProps, isV3)
         // 如果返回值也是引用类型，则加入到类的引用里面
         // console.log('refResponseType', responseType, refResponseType)
+        const responseTypeDef = allModel.find(v => v.name === responseType)
+        const dataResponseType = responseTypeDef?.value?.props?.find(def => def.name === 'data') 
 
-        if (refResponseType) {
-          imports.push(responseType)
+        if (dataResponseType?.type) {
+          imports.push(dataResponseType.type)
         }
 
         parsedParameters.imports = imports
@@ -167,6 +169,7 @@ export function requestCodegen(paths: IPaths, isV3: boolean, options: ISwaggerOp
             method,
             contentType,
             responseType,
+            dataResponseType: dataResponseType?.type,
             formData,
             requestBody: parsedRequestBody.bodyType
           }

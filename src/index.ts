@@ -110,7 +110,7 @@ export async function codegen(params: ISwaggerOptions) {
   // TODO: next next next time
   if (options.multipleFileMode) {
     // if (true) {
-    Object.entries(requestCodegen(swaggerSource.paths, isV3, options)).forEach(([className, requests]) => {
+    Object.entries(requestCodegen(swaggerSource.paths, isV3, options, _allModel)).forEach(([className, requests]) => {
       let text = ''
       let allImport: string[] = []
       let allRequestNames: string[] = []

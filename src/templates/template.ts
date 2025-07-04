@@ -180,8 +180,9 @@ interface IRequestSchema {
   summary: string
   parameters: string
   responseType: string
+  dataResponseType: string
   method: string
-  contentType: string
+  contentType: string,
   path: string
   pathReplace: string
   parsedParameters: any
@@ -195,6 +196,7 @@ export function requestTemplate(name: string, requestSchema: IRequestSchema, opt
     summary = '',
     parameters = '',
     responseType = '',
+    dataResponseType = '',
     method = '',
     contentType = 'multipart/form-data',
     path = '',
@@ -227,7 +229,7 @@ function ${camelcase(
           : 'undefined'
       }
 
-  return fetcher<${responseType}, ${hasMeta ? 'true' : 'false'}>(
+  return fetcher<${dataResponseType || 'any'}, ${hasMeta ? 'true' : 'false'}>(
     {
       method: '${method}',
       url: url,
