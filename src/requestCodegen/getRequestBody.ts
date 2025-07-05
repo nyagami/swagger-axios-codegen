@@ -39,7 +39,7 @@ export function getRequestBody(requestBody: IRequestBody) {
     }
     if (bodyType) {
       imports.push(bodyType)
-      bodyType = `body?:${bodyType},`
+      bodyType = `body: ${bodyType},`
     }
 
   }
