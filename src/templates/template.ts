@@ -213,28 +213,26 @@ export function requestTemplate(name: string, requestSchema: IRequestSchema, opt
  */
 function ${camelcase(
     name
-  )}(${parameters}){
-  ${pathReplace ? 'let' : 'const'} url = basePath+'${path}'
+  )}(${!!parameters ? parameters + ',': ''}${!!requestBody ? requestBody : ''}){
+  ${pathReplace ? 'let' : 'const'} url = '${path}'
   ${pathReplace}
-  const configs = getConfigs('${method}', '${contentType}', url, {})
   ${parsedParameters && headerParameters && headerParameters.length > 0
   ? `options.headers = {${headerParameters}, ...options.headers }`
   : ''}
-  ${parsedParameters && queryParameters.length > 0 ? 'configs.params = {' + queryParameters.join(',') + '}' : ''}
-  const data = ${parsedParameters && bodyParameter && bodyParameter.length > 0
-        ?
-        bodyParameter
-        : !!requestBody
-          ? 'params.body'
-          : 'undefined'
-      }
+  ${parsedParameters && queryParameters.length > 0 ? 'const requestParams = {' + queryParameters.join(',') + '}' : ''}
 
   return fetcher<${dataResponseType || 'any'}, ${hasMeta ? 'true' : 'false'}>(
     {
       method: '${method}',
       url: url,
-      data,
-      params: configs.params
+      data: ${parsedParameters && bodyParameter && bodyParameter.length > 0
+        ?
+        bodyParameter
+        : !!requestBody
+          ? 'body'
+          : 'undefined'
+      },
+      ${parsedParameters && queryParameters.length ? 'params: requestParams' : ''}
     },
     {
       displayError: ${options.showErrorRequests?.find((v) => v.path === path && v.method === method) ? 'true' : 'false'},

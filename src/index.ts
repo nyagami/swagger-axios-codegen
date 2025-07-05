@@ -13,8 +13,8 @@ import {
   typeTemplate
 } from './templates/template'
 import { customerServiceHeader, serviceHeader, definitionHeader, disableLint } from './templates/serviceHeader'
-import { isOpenApi3, findDeepRefs, setDefinedGenericTypes, getDefinedGenericTypes, trimString } from './utils'
-import { requestCodegen, IRequestClass, IRequestMethods } from './requestCodegen'
+import { isOpenApi3, findDeepRefs, setDefinedGenericTypes, trimString } from './utils'
+import { requestCodegen } from './requestCodegen'
 import { componentsCodegen } from './componentsCodegen'
 import { definitionsCodeGen } from './definitionCodegen'
 
@@ -124,7 +124,6 @@ export async function codegen(params: ISwaggerOptions) {
 
       // unique import
       const uniqueImports: string[] = []
-      allImport.push('getConfigs', 'basePath')
       for (const item of allImport) {
         if (!uniqueImports.includes(item)) uniqueImports.push(item)
       }

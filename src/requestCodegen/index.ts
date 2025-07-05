@@ -115,15 +115,14 @@ export function requestCodegen(paths: IPaths, isV3: boolean, options: ISwaggerOp
           }
 
           parsedParameters.requestParameters = parsedParameters.requestParameters
-            ? parsedParameters.requestParameters + parsedRequestBody.bodyType
-            : parsedRequestBody.bodyType
+            ? parsedParameters.requestParameters : ''
         }
 
         parameters =
           parsedParameters.requestParameters?.length > 0
             ? `params: {
               ${parsedParameters.requestParameters}
-          } = {} as any,`
+          }`
             : ''
 
         const { responseType, isRef: refResponseType } = getResponseType(reqProps, isV3)
