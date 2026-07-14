@@ -202,6 +202,7 @@ export function requestTemplate(name: string, requestSchema: IRequestSchema, opt
     path = '',
     pathReplace = '',
     parsedParameters = <any>{},
+    formData = '',
     requestBody = null,
   } = requestSchema
   const { queryParameters = [], bodyParameter = [], headerParameters } = parsedParameters
@@ -213,25 +214,27 @@ export function requestTemplate(name: string, requestSchema: IRequestSchema, opt
  */
 function ${camelcase(
     name
-  )}(${!!parameters ? parameters + ',': ''}${!!requestBody ? requestBody : ''}){
+  )}(${!!parameters ? parameters + ',' : ''}${!!requestBody ? requestBody : ''}){
   ${pathReplace ? 'let' : 'const'} url = '${path}'
   ${pathReplace}
   ${parsedParameters && headerParameters && headerParameters.length > 0
-  ? `options.headers = {${headerParameters}, ...options.headers }`
-  : ''}
+      ? `options.headers = {${headerParameters}, ...options.headers }`
+      : ''}
   ${parsedParameters && queryParameters.length > 0 ? 'const requestParams = {' + queryParameters.join(',') + '}' : ''}
+  ${formData}
 
   return fetcher<${dataResponseType || 'any'}, ${hasMeta ? 'true' : 'false'}>(
     {
       method: '${method}',
       url: url,
-      data: ${parsedParameters && bodyParameter && bodyParameter.length > 0
-        ?
-        bodyParameter
+      data: ${formData
+      ? 'data'
+      : parsedParameters && bodyParameter && bodyParameter.length > 0
+        ? bodyParameter
         : !!requestBody
           ? 'body'
           : 'undefined'
-      },
+    },
       ${parsedParameters && queryParameters.length ? 'params: requestParams' : ''}
     },
     {

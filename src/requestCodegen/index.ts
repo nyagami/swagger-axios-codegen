@@ -29,7 +29,7 @@ export function requestCodegen(paths: IPaths, isV3: boolean, options: ISwaggerOp
       // so we do not accidentally interpret them as a http method later
       if (pathLevelParams) delete requestAndParams['parameters']
       const request = requestAndParams as IRequestUrl
-      
+
       let methodName = getMethodNameByPath(path)
       for (const [method, reqProps] of Object.entries(request)) {
         methodName =
@@ -97,7 +97,7 @@ export function requestCodegen(paths: IPaths, isV3: boolean, options: ISwaggerOp
 
           parsedParameters = getRequestParameters(tempParameters, options.useHeaderParameters)
           formData = parsedParameters.requestFormData
-            ? 'data = new FormData();\n' + parsedParameters.requestFormData
+            ? 'let data = new FormData();\n' + parsedParameters.requestFormData
             : ''
           pathReplace = parsedParameters.requestPathReplace
         }
@@ -129,7 +129,7 @@ export function requestCodegen(paths: IPaths, isV3: boolean, options: ISwaggerOp
         // 如果返回值也是引用类型，则加入到类的引用里面
         // console.log('refResponseType', responseType, refResponseType)
         const responseTypeDef = allModel.find(v => v.name === responseType)
-        const dataResponseType = responseTypeDef?.value?.props?.find(def => def.name === 'data') 
+        const dataResponseType = responseTypeDef?.value?.props?.find(def => def.name === 'data')
 
         if (dataResponseType?.type) {
           imports.push(dataResponseType.type)
